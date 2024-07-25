@@ -59,8 +59,12 @@ void PrintError(Error error)
     error.PrintErrorTrace();
 }
 
-int setProperty(Camera& camera, Property& property, PropertyType type,
-    const float f)
+int setProperty(
+    Camera&		camera,
+    Property&		property,
+    PropertyType	type,
+    const float		f
+)
 {
     property.type = type;
     error = camera.GetProperty(&property);
@@ -83,7 +87,6 @@ int setProperty(Camera& camera, Property& property, PropertyType type,
 	PrintError(error);
 	return -1;
     }
-
 
     return 0;
 }
@@ -208,11 +211,22 @@ string dateandhour(string str, string deli = " ")
     return retStr;
 }
 
-static const void saveImage(Image& im, int count, int picNum, string id, string root, string logFilePath, int secondcount) {
+static const void  saveImage( Image& im,
+    int		count,
+    int		picNum,
+    string	id,
+    string	root,
+    string	logFilePath,
+    int		secondcount
+)
+{
     //creating a folder for each hour of capturing
-    std::cout << "saveImage called, Camera ID: " << id << " Count: " << count << endl;
+    std::cout << "saveImage called, Camera ID: " << id
+	<< " Count: " << count << endl;
+
     //string logStr = "Camera ID " + id + " Saved " + time_stamped_folder;
     //loginfo(logStr,logFilePath);
+
     SYSTEMTIME st;
     GetLocalTime(&st);
     string time_stamped_folder = "";
@@ -238,10 +252,12 @@ static const void saveImage(Image& im, int count, int picNum, string id, string 
     string t = get_time();
     string t2 = get_time_2();
 
-    // Create formatted string so that images are sorted as they get put into the folder
+    // Create formatted string so that images are sorted as they get put into
+    // the folder
     char fileName[100];
     char* c_time_stamped_path = new char[time_stamped_path.length() + 1];
-    strcpy_s(c_time_stamped_path, time_stamped_path.length() + 1, time_stamped_path.c_str());
+    strcpy_s( c_time_stamped_path, time_stamped_path.length() + 1,
+	time_stamped_path.c_str());
     // c_time_stamped_path is correct now
 
     stringstream ss;
@@ -272,17 +288,18 @@ static const void saveImage(Image& im, int count, int picNum, string id, string 
 
     string file = time_stamped_path + "/Flake" + to_string(count) + "_Cam" + id + "_" + to_string(picNum) + "_" + t + ".bmp";
     //im.Save(file.c_str())
+
     FlyCapture2::Error error;
     cout << id << "\n";
     //cout << "ID: "<< id << im.Image.receivedDataSize << "\n";
+
     error = im.Save(fileName);
     if (error != FlyCapture2::PGRERROR_OK) {
 	cout << "error";
 	error.PrintErrorTrace();
     }
+
     std::terminate;
-    //Snowflake_System(clearCamBuffers());
-    //clearCamBuffers();
 }
 
 class SSS_Camera
@@ -522,68 +539,6 @@ public:
 };
 
 
-class Snowflake_System
-{
-    /*This class will maintain all of the overarching processes of the system, including:
-    ->Number of cameras and general camera management
-    ->Asychronous timing in order to timeout certain process
-    ->Ability to start additional asynchronus threads for other necessary programs such as the empty image filter
-    ->Ability to time processes using the chrono library
-    ->Ability to error check the system and break out of certain processes
-    */
-public:
-    unsigned int numActiveCameras;
-    string start_time_stamp;
-    string end_time_stamp;
-    Camera** sortedCams;
-    unsigned int finalCount;
-    string lastPic_time_stamp;
-    string current_time;
-
-    //The constructor method...
-    Snowflake_System(unsigned int& numCams, Camera** sortedCams)
-    {
-	this->numActiveCameras = numCams;
-	this->sortedCams = sortedCams;
-	this->start_time_stamp = get_time();
-    }
-    //Method to clear the camera buffers 
-    void clearCamBuffers()
-    {
-	unsigned int num = this->numActiveCameras;
-	unsigned int buffCount = 1;
-	//Check to see if all buffers are empty and wait until the buffer is not empty
-	Image Im;
-	future<Error> err;
-	while (buffCount != 0)
-	{
-	    buffCount = 0;
-	    for (unsigned int i = 0; i < num; i++)
-	    {
-		chrono::system_clock::time_point duration = chrono::system_clock::now() + chrono::seconds(1);
-		err = async(CheckCamBuffer, this->sortedCams[i], Im); //Run asynchronus thread
-		if (future_status::ready == err.wait_until(duration)) //Check to see if the buffer ever finishes running
-		{
-		    buffCount++; //Increment the buffer couter if it did not finish
-		}
-	    }
-
-	    std::cout << "Number of Residual Buffers Found: " << to_string(buffCount) << endl;
-	}
-    }
-
-    void set_time(string& t)
-    {
-	//This function will set the current time of the system corresponding to each picture that is taken
-	this->lastPic_time_stamp = t;
-    }
-
-    void set_current_time()
-    {
-	this->current_time = get_time(); //Update the current time
-    }
-};
-
 void PrintBuildInfo()
 {
     FC2Version fc2Version;
@@ -597,6 +552,7 @@ void PrintBuildInfo()
     timeStamp << "Application build date: " << __DATE__ << " " << __TIME__;
     std::cout << timeStamp.str() << endl << endl;
 }
+
 
 void PrintCameraInfo(CameraInfo* pCamInfo)
 {
@@ -613,7 +569,10 @@ void PrintCameraInfo(CameraInfo* pCamInfo)
 
 }
 
-void static updateAtomics(int numThreads, std::atomic<bool>& program_is_running, std::atomic<int>* imagesCapturedSinceSave, std::atomic<bool>* allowSave, std::atomic<int>& globalFlakeCount) {
+
+void static updateAtomics(int numThreads, std::atomic<bool>& program_is_running, std::atomic<int>* imagesCapturedSinceSave, std::atomic<bool>* allowSave, std::atomic<int>& globalFlakeCount)
+{
+
     bool droppedFrame = false;
     bool readyToSave;
     while (program_is_running) {
@@ -702,10 +661,11 @@ void static updateAtomics(int numThreads, std::atomic<bool>& program_is_running,
     }
 }
 
+
+//**************************************************************************
+
 int main(int /*argc*/, char** /*argv*/)
 {
-    //*******************************************************************************************************************
-    //*******************************************************************************************************************
     //Parameters (Values that can be changed)
     //string p = "C:/Test_07_21_21"; // CHANGE THIS STRING TO CHANGE THE FOLDER WHERE IMAGES ARE SAVED. FOLDER MUST ALREADY EXIST.
     string logFilePath = R"(C:\Users\Z440\oneDrive - Colostate\Desktop\Logs\Logs.txt)";
@@ -745,19 +705,19 @@ int main(int /*argc*/, char** /*argv*/)
 
 
     
-    //*******************************************************************************************************************
-    //*******************************************************************************************************************
+    //**********************************************************************
     // Commands to start running the background program
-    fstream logFile;
-    string path = "C:/LogFiles/log_" + get_time() + ".txt";
+    fstream	logFile;
+    string	path = "C:/LogFiles/log_" + get_time() + ".txt";
     logFile.open(path, fstream::out);
     logFile << "Starting Time: " << get_time() << "\n";
+
     PrintBuildInfo();
     EmbeddedImageInfo   EmbeddedInfo;
 
+    BusManager		busMgr;
+    unsigned int	numCameras;
 
-    BusManager busMgr;
-    unsigned int numCameras;
     error = busMgr.GetNumOfCameras(&numCameras);
     if (error != PGRERROR_OK)
     {
@@ -766,7 +726,7 @@ int main(int /*argc*/, char** /*argv*/)
     }
 
     std::cout << "Number of cameras detected: " << numCameras << endl;
-    logFile << "Number of cameras detected: " << numCameras << "\n";
+    logFile   << "Number of cameras detected: " << numCameras << "\n";
 
     if (numCameras < 1)
     {
@@ -776,7 +736,7 @@ int main(int /*argc*/, char** /*argv*/)
 	return -1;
     }
 
-    Camera** ppCameras = new Camera * [numCameras];
+    Camera**	ppCameras = new Camera * [numCameras];
 
     // Connect to all detected cameras and attempt to set them to
     // a common video mode and frame rate
@@ -810,7 +770,9 @@ int main(int /*argc*/, char** /*argv*/)
 	}
 	PrintCameraInfo(&camInfo);
     }
+
     Camera** ppCamerasSorted = new Camera * [numCameras];
+
     for (unsigned int i = 0; i < numCameras; i++)
     {
 	PGRGuid guid;
@@ -827,14 +789,16 @@ int main(int /*argc*/, char** /*argv*/)
 	    PrintError(error);
 	    return -1;
 	}
-	//Initializing the camera serial numbers and sorting the array of camera objects
+	//Initializing the camera serial numbers and sorting the array of
+	// camera objects
 	if (camInfo.serialNumber == 15444692) {
 	    ppCamerasSorted[0] = ppCameras[i]; //15444692 = camera 0
 	    std::cout << "Camera 0 is declared" << "\n";
 	}
 
 	if (camInfo.serialNumber == 13510226) {
-	    ppCamerasSorted[1] = ppCameras[i]; //SPEED CAMERA!!! 13510226 = camera 1
+		//SPEED CAMERA!!! 13510226 = camera 1
+	    ppCamerasSorted[1] = ppCameras[i];
 	    std::cout << "Camera 1 is declared" << "\n";
 	}
 
@@ -859,40 +823,39 @@ int main(int /*argc*/, char** /*argv*/)
 	    std::cout << "Camera 6 is declared" << "\n";
 	}
     }
+
     //cout << "The whole array: " << ppCamerasSorted << endl;
     //cout << "The 0th instance: " << ppCamerasSorted[1] << endl;
+
     for (unsigned int i = 0; i < numCameras; i++)
     {
-
-	FC2Config Config;
-	//if (i == 1) {
-	//  FrameRate fr = FRAMERATE_240;
-	//  std::cout << "numFrames: " << fr << endl;
-	//  //FrameRate fr = FRAMERATE_FORCE_32BITS;
-	//}
-	//FrameRate fr = FRAMERATE_FORCE_32BITS;
-	//PCIeBusSpeed PCIE = PCIE_BUSSPEED_5_0;
-	//BusSpeed speed = BUSSPEED_S_FASTEST;
+	FC2Config	Config;
 
 	// Set buffered modes
-	error = ppCamerasSorted[i]->GetConfiguration(&Config); //error happen here
+	error = ppCamerasSorted[i]->GetConfiguration(&Config);
+			//error happen here
 	if (error != PGRERROR_OK)
 	{
 	    PrintError(error);
 	    return -1;
 	}
-	Config.numBuffers = 50;
-	Config.grabMode = BUFFER_FRAMES;
+
+	Config.numBuffers                    = 50;
+	Config.grabMode                      = BUFFER_FRAMES;
 	Config.highPerformanceRetrieveBuffer = true;
-	Config.grabTimeout = 0; // was originally 0, set to 100000 for testing on 9/10/21 -Peter
+	Config.grabTimeout                   = 0;
+		// was originally 0, set to 100000 for testing on 9/10/21 -Peter
 	//Config.registerTimeoutRetries = 5;
 	//Config.registerTimeout = 10000;
 	//Config.asyncBusSpeed = BUSSPEED_S_FASTEST;
+
 	ppCamerasSorted[i]->SetConfiguration(&Config);
+
 	error = ppCamerasSorted[i]->GetConfiguration(&Config);
-	std::cout << "Buffer Mode: " << Config.grabMode << endl;
-	std::cout << "Number of Buffers: " << Config.numBuffers << endl;
-	std::cout << "Grab Timeout: " << Config.grabTimeout << endl;
+
+	std::cout << "Buffer Mode: "       << Config.grabMode    << endl;
+	std::cout << "Number of Buffers: " << Config.numBuffers  << endl;
+	std::cout << "Grab Timeout: "      << Config.grabTimeout << endl;
 	if (error != PGRERROR_OK)
 	{
 	    PrintError(error);
@@ -902,7 +865,7 @@ int main(int /*argc*/, char** /*argv*/)
 	PGRGuid guid;
 
 	// Get current trigger settings
-	TriggerMode triggerMode;
+	TriggerMode	triggerMode;
 	error = ppCamerasSorted[i]->GetTriggerMode(&triggerMode);
 	if (error != PGRERROR_OK)
 	{
@@ -913,21 +876,23 @@ int main(int /*argc*/, char** /*argv*/)
 	// Set camera to trigger mode 0 (standard ext. trigger)
 	//   Set GPIO to receive input from pin 0
 
-	triggerMode.onOff = true;
-	triggerMode.mode = 0;
+	triggerMode.onOff     = true;
+	triggerMode.mode      = 0;
 	triggerMode.parameter = 0;
-	triggerMode.polarity = 0;
-	triggerMode.source = 0;
+	triggerMode.polarity  = 0;
+	triggerMode.source    = 0;
+
 	error = ppCamerasSorted[i]->SetTriggerMode(&triggerMode);
 	if (error != PGRERROR_OK)
 	{
 	    PrintError(error);
 	    return -1;
 	}
+
 	std::cout << "  Successfully set to external trigger, low polarity, source GPIO 0." << endl;
 
 	// Set the shutter property of the camera
-	Property shutterProp;
+	Property	shutterProp;
 	float k_shutterVal = 0.02f;//0.011f;        //Default Value
 
 	if (calibration) {
@@ -969,8 +934,8 @@ int main(int /*argc*/, char** /*argv*/)
 	}
 
 	// Set the gain property of the camera
-	Property gainProp;
-	float k_gainVal = 30.0f;
+	Property	gainProp;
+	float		k_gainVal = 30.0f;
 
 	if (calibration) {
 	    if (i == 1) {
@@ -1008,17 +973,18 @@ int main(int /*argc*/, char** /*argv*/)
 	    cout << "Successfully set Cam6 Gain" << endl;
 	}
 
-	if (setProperty(*ppCamerasSorted[i], gainProp, GAIN, k_gainVal) != 0)
+	if ( setProperty( *ppCamerasSorted[i], gainProp, GAIN, k_gainVal ) != 0)
 	{
 	    std::cout << "  SMAS: could not set gain property." << endl;
 	}
 	else
 	{
-	    std::cout << "  Successfully set gain to " << fixed << setprecision(2) << k_gainVal << " dB" << endl;
+	    std::cout << "  Successfully set gain to "
+		<< fixed << setprecision(2) << k_gainVal << " dB" << endl;
 	}
 
 	// Get current embedded image info
-	error = ppCamerasSorted[i]->GetEmbeddedImageInfo(&EmbeddedInfo);
+	error = ppCamerasSorted[i]->GetEmbeddedImageInfo( &EmbeddedInfo );
 	if (error != PGRERROR_OK)
 	{
 	    PrintError(error);
@@ -1060,20 +1026,24 @@ int main(int /*argc*/, char** /*argv*/)
 	if (error != PGRERROR_OK)
 	{
 	    PrintError(error);
-	    std::cout << "Error starting to capture images. Error from camera " << i << endl
+	    std::cout << "Error starting to capture images. Error from camera "
+		<< i << endl
 		<< "Press Enter to exit." << endl;
 	    cin.ignore();
 	    return -1;
 	}
 
-
     }
 
     std::cout << "\nBeginning capture. Waiting for signal..." << endl;
+
     logFile << "The sequential setup has been completed. All cameras detected have been declared. \n";
+
     SSS_Camera* CamList = new SSS_Camera[numCameras];
 
-    // TODO: ideally the above should be inputted as an argument when starting execution of the application
+    // TODO: ideally the above should be inputted as an argument when
+    // starting execution of the application
+
     bool exitC = false;
     for (unsigned int i = 0; i < numCameras; i++)
     {
