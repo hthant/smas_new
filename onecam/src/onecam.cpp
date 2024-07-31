@@ -148,7 +148,7 @@ main( int	argc,
 
   // Trigger Mode settings  (CameraBase.h)
 
-    Fly::TriggerMode       one_trigg;
+    Fly::TriggerMode	one_trigg;
 
     flyErr( camX.GetTriggerMode( &one_trigg ) );
 
@@ -159,6 +159,78 @@ main( int	argc,
     one_trigg.source    = 0;
 
     flyErr( camX.SetTriggerMode( &one_trigg ) );
+
+  // Shutter settings
+    {
+	Fly::Property	prop_shutter  ( Fly::SHUTTER );
+
+	prop_shutter.absValue       = 0.035;
+	prop_shutter.absControl     = true;
+	prop_shutter.onePush        = false;
+	prop_shutter.onOff          = true;
+	prop_shutter.autoManualMode = false;
+
+	flyErr( camX.SetProperty( &prop_shutter ) );
+    }
+
+  // Gain settings
+    {
+	Fly::Property	prop_gain  ( Fly::GAIN );
+
+	prop_gain.absValue       = 30.0;
+	prop_gain.absControl     = true;
+	prop_gain.onePush        = false;
+	prop_gain.onOff          = true;
+	prop_gain.autoManualMode = false;
+
+	flyErr( camX.SetProperty( &prop_gain ) );
+    }
+
+  // Embedded Image info
+    {
+	Fly::EmbeddedImageInfo		emInfo;
+
+	flyErr( camX.GetEmbeddedImageInfo( &emInfo ) );
+
+	if ( emInfo.timestamp.available == true ) {
+	     emInfo.timestamp.onOff = true;
+	    cout << "+ Enabled camera timestamp." <<endl;
+	}
+
+	if ( emInfo.frameCounter.available == true ) {
+	     emInfo.frameCounter.onOff = true;
+	    cout << "+ Enabled camera frameCounter." <<endl;
+	}
+
+	flyErr( camX.SetEmbeddedImageInfo( &emInfo ) );
+    }
+
+  // Start Capture
+
+    cout << "+ StartCapture()" <<endl;
+    flyErr( camX.StartCapture() );
+
+  // Reset camera diagnostic infomation
+
+    cout << "+ ResetStats()" <<endl;
+    flyErr( camX.ResetStats() );
+
+  // Retrieve Image
+    {
+	Fly::Image		imx;
+
+	cout << "+ RetrieveBuffer()" <<endl;
+	flyErr( camX.RetrieveBuffer( &imx ) );
+
+	cout << "+ Save image" <<endl;
+	flyErr( imx.Save( "foo.bmp" ) );
+    }
+
+  // Finish and exit
+
+    cout << "+ StopCapture()" <<endl;
+    flyErr( camX.StopCapture() );
+    flyErr( camX.Disconnect() );
 
     return  0;
   }

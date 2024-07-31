@@ -8,17 +8,17 @@ SHELL      = /bin/sh
 BINDIR     = ../bin
 OJ         = ../obj
 
-		# the librgpio library
-INCDIR     = ../../flycapture
-LIBDIR     = ?
+		# symlinks to FlyCapture2 installation
+INCDIR     = ../../flycapture_inc
+LIBDIR     = ../../flycapture_lib
 LIBS       = ?
+#!! link library access needs work!
 
 		# common include dependencies
 #INCS       = \
 
 		# objects not including main()
 OBJS       = \
-	$(OJ)/onecam.o
 
 		# link libraries, order matters
 #LIBFLAGS   = -lcap
@@ -27,10 +27,11 @@ OBJS       = \
 CXXFLAGS   = -Wall  -std=c++11  -I $(INCDIR)
 
 
+	# compile .o files without linking
 obj:	$(OJ)/onecam.o
 
 run:	compile
-	$(BINDIR)/onecam --TESTOP
+	# $(BINDIR)/onecam --TESTOP
 
 compile:  $(OJ)  $(BINDIR)  $(BINDIR)/onecam
 

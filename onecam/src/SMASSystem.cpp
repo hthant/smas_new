@@ -67,21 +67,22 @@ int setProperty(
 )
 {
     property.type = type;
-    error = camera.GetProperty(&property);
+
+    error = camera.GetProperty( &property );
     if (error != PGRERROR_OK)
     {
 	PrintError(error);
 	return -1;
     }
 
-    property.absControl = true;
-    property.onePush = false;
-    property.onOff = true;
+    property.absControl     = true;
+    property.onePush        = false;
+    property.onOff          = true;
     property.autoManualMode = false;
 
-    property.absValue = f;
+    property.absValue       = f;
 
-    error = camera.SetProperty(&property);
+    error = camera.SetProperty( &property );
     if (error != PGRERROR_OK)
     {
 	PrintError(error);
@@ -351,8 +352,15 @@ public:
 	    //this->Im6 = im6;
 	//}   // This section commented out to try to get camera 1 to only take 1 image
     }
+
     //The method to be run within the separate threads
-    void run_Cam(std::atomic<bool>& program_is_running, std::atomic<int>& imagesCapturedSinceSave, std::atomic<bool>& allowSave, std::atomic<int>& globalFlakeCount)
+
+    void run_Cam(
+	std::atomic<bool>&	program_is_running,
+	std::atomic<int>&	imagesCapturedSinceSave,
+	std::atomic<bool>&	allowSave,
+	std::atomic<int>&	globalFlakeCount
+    )
     {
 	Error error;
 	bool hasPicture0 = false;
@@ -370,7 +378,6 @@ public:
 	unsigned int cols = 0;
 	int return_val = 0;
 
-
 	while (program_is_running)
 	{
 	    string t = get_time();
@@ -387,9 +394,9 @@ public:
 		this->lastsecond = current_second;
 		secondcount = 0;
 	    }
-	    if(false){
-	    //if (this->id == 1) {
-	    //if (false){
+
+	    if(false){ 	//!!! NOT REACHED  ================================
+
 		Error error0;
 		Error error1;
 
@@ -506,7 +513,8 @@ public:
 		    hasPicture0 = false;
 		    hasPicture1 = false;
 		}
-	    }
+	    }	//!!! NOT REACHED  ========================================
+
 	    else {
 		error = this->cam->RetrieveBuffer(&this->Im);
 		string errorDescription = error.GetDescription();
@@ -1078,14 +1086,22 @@ int main(int /*argc*/, char** /*argv*/)
 
     for (unsigned int i = 0; i < nThreads; i++)
     {
-	threadList[i] = thread(&SSS_Camera::run_Cam, CamList[i], std::ref(program_is_running), std::ref(imagesCapturedSinceSave[i]), std::ref(allowSave[i]), std::ref(globalFlakeCount));
-
+	threadList[i] = thread(
+		&SSS_Camera::run_Cam,
+		CamList[i],
+		std::ref( program_is_running ),
+		std::ref( imagesCapturedSinceSave[i] ),
+		std::ref( allowSave[i] ),
+		std::ref( globalFlakeCount )
+	);
     }
     logFile << "Threads are running. Time is: " << get_time() << "\n";
     logFile.close();
+
     string command;
     std::cout << "There are now " + to_string(nThreads) + " threads running!" << endl;
     std::cout << "Enter 'exit' to just stop the camera capture and exit the application. " << endl << endl;
+
     while (true)
     {
 	cin >> command;
