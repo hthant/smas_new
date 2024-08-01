@@ -517,24 +517,39 @@ public:
 
 	    else {
 		error = this->cam->RetrieveBuffer(&this->Im);
-		string errorDescription = error.GetDescription();
-		if (errorDescription != "No buffer arrived within the specified timeout." && errorDescription != "Ok.") {
-		    cout << "Here is the error returned by RetrieveBuffer: " << error.GetDescription() << id << "\n";
+		string		errorDescription = error.GetDescription();
+
+		if ( errorDescription !=
+		    "No buffer arrived within the specified timeout." &&
+		    errorDescription != "Ok.")
+		{
+		    cout << "Here is the error returned by RetrieveBuffer: "
+			 << error.GetDescription() << id << "\n";
 		}
+
 		//PGRERROR_OK indicates image sucessfully captured
 		if (error == PGRERROR_OK)
 		{
 		    cout << "PGRERROR Camera ID: " << id << "\n";
-		    //cout << "TESTTINSETINA;SKLNGA;LKSDJF;AJ" << "image captured by " << id << "\n";
-		    //cout << "Incrementing counter for Cam " << id << "Value before incrementing: " << imagesCapturedSinceSave << "\n";
+
+
 		    // Temporarily try only incrementing this if it is 0, otherwise pause for a moment and then output its value
+
 		    imagesCapturedSinceSave++;
 
 		}
-		bool t = true;
-		if (allowSave.compare_exchange_strong(t, false)) {
+
+		bool	t = true;
+		if ( allowSave.compare_exchange_strong( t, false ) ) {
 		    imagesCapturedSinceSave = 0;
-		    thread saveThread(saveImage, Im, (int)globalFlakeCount, 1, id, root, logFilePath, secondcount);
+		    thread saveThread( saveImage, Im,
+			(int)globalFlakeCount,
+			1,
+			id,
+			root,
+			logFilePath,
+			secondcount
+		    );
 		    secondcount++;
 		    saveThread.detach();
 		}

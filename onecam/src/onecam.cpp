@@ -136,7 +136,7 @@ main( int	argc,
 
     one_config.numBuffers                    = 50;
     one_config.grabMode                      = Fly::BUFFER_FRAMES;
-    one_config.grabTimeout                   = 0;
+    one_config.grabTimeout                   = 60000;	// milli-seconds
     one_config.highPerformanceRetrieveBuffer = true;
 
     flyErr( camX.SetConfiguration( &one_config ) );
@@ -211,6 +211,9 @@ main( int	argc,
     flyErr( camX.StartCapture() );
 
   // Reset camera diagnostic infomation
+	// This may not be effective after StartCapture()?
+	// See FlyCapture2Defs.h highPerformanceRetrieveBuffer = true
+	// any interaction other then grabbing the image is disabled.
 
     cout << "+ ResetStats()" <<endl;
     flyErr( camX.ResetStats() );
@@ -219,6 +222,7 @@ main( int	argc,
     {
 	Fly::Image		imx;
 
+	// Wait at most Fly::FC2Config.grabTimeout ms for an image.
 	cout << "+ RetrieveBuffer()" <<endl;
 	flyErr( camX.RetrieveBuffer( &imx ) );
 
