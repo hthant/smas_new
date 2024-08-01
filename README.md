@@ -2,7 +2,7 @@
 		SMAS Code Repository
 		--------------------
 
-The CSU Snowflake camera system.
+The CSU Snowflake Measurement and Analysis System (SMAS).
 
 GitHub:  https://github.com/hthant/smas_new
 
@@ -28,3 +28,10 @@ FlyCapture2
     This is the API we are using.  It no doubt has other libraries
     that it depends on (i.e. for linking our code).
 
+
+Meeting Notes:
+--------------
+08/01/2024 - things to do:
+- makefile, and linking to include files
+- review the code
+- try to see if the executable runs correctly on linux
