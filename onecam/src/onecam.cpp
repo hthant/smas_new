@@ -118,7 +118,7 @@ main( int	argc,
 
   // Connect one camera by serial number
 
-    unsigned		one_sn = 15444696;
+    unsigned		one_sn = 15444691;
 
     flyErr( busMgr.GetCameraFromSerialNumber( one_sn, &guid ) );
     flyErr( camX.Connect( &guid ) );

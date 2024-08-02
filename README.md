@@ -35,3 +35,11 @@ Meeting Notes:
 - makefile, and linking to include files
 - review the code
 - try to see if the executable runs correctly on linux
+total 20K
+drwxrwxr-x 2 snow snow 4.0K Aug  1 15:40 flycapture_codebase
+lrwxrwxrwx 1 snow snow   23 Aug  1 15:46 flycapture_inc -> /usr/include/flycapture
+lrwxrwxrwx 1 snow snow    8 Aug  1 16:58 flycapture_lib -> /usr/lib
+drwxrwxr-x 2 snow snow 4.0K Aug  1 16:17 MultipleCameraEx
+drwxrwxr-x 2 snow snow 4.0K Aug  1 15:40 old_windows
+drwxrwxr-x 5 snow snow 4.0K Aug  1 16:59 onecam
+-rw-rw-r-- 1 snow snow  898 Aug  1 15:40 README.md

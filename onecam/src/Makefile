@@ -11,7 +11,7 @@ OJ         = ../obj
 		# symlinks to FlyCapture2 installation
 INCDIR     = ../../flycapture_inc
 LIBDIR     = ../../flycapture_lib
-LIBS       = ?
+LIBS       = 
 #!! link library access needs work!
 
 		# common include dependencies
@@ -21,7 +21,7 @@ LIBS       = ?
 OBJS       = \
 
 		# link libraries, order matters
-#LIBFLAGS   = -lcap
+LIBFLAGS   = -lflycapture 
 
 		# compiler flags
 CXXFLAGS   = -Wall  -std=c++11  -I $(INCDIR)
